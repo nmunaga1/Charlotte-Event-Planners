@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Charlotte Event Planners CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="admin.css" />
+  <script defer src="admin.js"></script>
+</head>
+<body>
+  <header class="cms-header">
+    <div class="cms-header-inner">
+      <div class="cms-header-copy">
+        <p class="cms-eyebrow">Content Management</p>
+        <h1>Charlotte Event Planners CMS</h1>
+        <p>
+          Update homepage content, image URLs, contact details, and SEO settings from one place.
+          Saved changes publish to the website immediately.
+        </p>
+      </div>
+
+      <div class="cms-header-actions">
+        <a class="ghost-btn" href="/" target="_blank" rel="noreferrer">Open Website</a>
+        <button class="ghost-btn" id="reload-content" type="button">Reload Content</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="cms-layout">
+    <aside class="cms-sidebar">
+      <section class="sidebar-card">
+        <p class="cms-eyebrow">Status</p>
+        <h2>Editor access</h2>
+        <p id="security-status">Checking CMS access...</p>
+        <p id="auth-state">Checking authentication status...</p>
+        <p id="save-meta">No saved changes yet.</p>
+      </section>
+
+      <section class="sidebar-card">
+        <p class="cms-eyebrow">Access</p>
+        <h2>Unlock editing</h2>
+        <p id="auth-help">
+          Sign in with the owner account. If MFA is enabled, enter the current 6-digit code too.
+        </p>
+
+        <form id="cms-auth-form" class="auth-form">
+          <label for="cms-username">Username</label>
+          <input
+            id="cms-username"
+            name="cms-username"
+            type="text"
+            autocomplete="username"
+            placeholder="owner"
+          />
+
+          <label for="cms-password">Password</label>
+          <input
+            id="cms-password"
+            name="cms-password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Enter password"
+          />
+
+          <div id="setup-password-confirm-wrap" class="hidden">
+            <label for="cms-password-confirm">Confirm password</label>
+            <input
+              id="cms-password-confirm"
+              name="cms-password-confirm"
+              type="password"
+              autocomplete="new-password"
+              placeholder="Re-enter password"
+            />
+          </div>
+
+          <label id="setup-mfa-wrap" class="checkbox-field hidden" for="cms-enable-mfa">
+            <input
+              id="cms-enable-mfa"
+              name="cms-enable-mfa"
+              type="checkbox"
+              checked
+            />
+            <span>Require a 6-digit authenticator app code for future sign-ins</span>
+          </label>
+
+          <div id="totp-field-wrap" class="totp-field hidden">
+            <label for="cms-totp">Verification code</label>
+            <input
+              id="cms-totp"
+              name="cms-totp"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              placeholder="123456"
+            />
+          </div>
+
+          <div class="auth-actions">
+            <button class="primary-btn" id="login-button" type="submit">Sign In</button>
+            <button class="ghost-btn hidden" id="logout-button" type="button">Sign Out</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="sidebar-card">
+        <p class="cms-eyebrow">Tips</p>
+        <h2>Editing notes</h2>
+        <ul class="tips-list">
+          <li>Use full image URLs for section backgrounds and gallery photos.</li>
+          <li>List sections let you add or remove services, testimonials, and more.</li>
+          <li>Update the site URL in SEO settings so the sitemap and canonical tags stay correct.</li>
+          <li>If this is the first visit on localhost, create the owner login here before trying to sign in.</li>
+          <li>Run <code>npm run admin:credentials -- --password "your-password"</code> to generate a bcrypt hash and optional TOTP secret.</li>
+        </ul>
+      </section>
+    </aside>
+
+    <section class="cms-content">
+      <div class="cms-alert hidden" id="cms-alert" role="status" aria-live="polite"></div>
+      <form id="cms-form" class="cms-form" novalidate></form>
+    </section>
+  </main>
+
+  <div class="save-bar">
+    <div>
+      <strong id="save-status">Loading content...</strong>
+      <p id="save-details">The editor will appear once the current content loads.</p>
+    </div>
+
+    <div class="save-actions">
+      <button class="ghost-btn" id="reset-changes" type="button">Reset Changes</button>
+      <button class="primary-btn" id="save-content" type="button">Save Changes</button>
+    </div>
+  </div>
+</body>
+</html>

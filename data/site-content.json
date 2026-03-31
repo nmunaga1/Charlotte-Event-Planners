@@ -1,0 +1,289 @@
+{
+  "seo": {
+    "siteUrl": "https://www.charlotteeventplanners.com",
+    "title": "Charlotte Event Planners | Luxury Events & Weddings",
+    "description": "Charlotte Event Planners designs luxury weddings, birthdays, picnics, and elevated events with calm guidance, refined aesthetics, and seamless execution.",
+    "keywords": "Charlotte event planner, Charlotte wedding planner, luxury event planner Charlotte, Charlotte party planner, luxury picnics Charlotte",
+    "ogImage": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=80"
+  },
+  "brand": {
+    "mark": "Charlotte",
+    "name": "Event Planners",
+    "footerDescription": "Luxury event planning for weddings, birthdays, picnics, and thoughtfully designed celebrations in Charlotte."
+  },
+  "hero": {
+    "eyebrow": "Charlotte's elevated event planning studio",
+    "title": "Events that feel effortless, look exquisite, and stay with you forever.",
+    "text": "We design weddings, birthdays, luxury picnics, and unforgettable celebrations for hosts who want beauty without the overwhelm. Every detail is curated. Every moment feels seamless.",
+    "primaryCtaLabel": "Start Planning Your Event",
+    "secondaryCtaLabel": "See the Portfolio",
+    "bookingLabel": "Now booking",
+    "cardTitle": "Beautifully managed events with calm, polished execution.",
+    "backgroundImage": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=80",
+    "cardList": [
+      "Full-service wedding planning & design",
+      "Luxury birthdays, picnics & private events",
+      "Trusted vendor coordination & flawless event day flow"
+    ],
+    "highlights": [
+      "White-glove planning",
+      "Design-led celebrations",
+      "Serving Charlotte & surrounding areas"
+    ]
+  },
+  "proof": {
+    "eyebrow": "Trusted by clients across Charlotte",
+    "title": "A luxury planning experience designed to feel personal, calm, and unmistakably elevated.",
+    "stats": [
+      {
+        "value": "120",
+        "suffix": "+",
+        "label": "events thoughtfully planned"
+      },
+      {
+        "value": "98",
+        "suffix": "%",
+        "label": "client satisfaction"
+      },
+      {
+        "value": "30",
+        "suffix": "+",
+        "label": "preferred local partners"
+      },
+      {
+        "value": "5",
+        "suffix": "-star",
+        "label": "client experience"
+      }
+    ]
+  },
+  "services": {
+    "eyebrow": "Services",
+    "title": "Celebrations styled with intention and executed without stress.",
+    "ctaLabel": "Reserve Your Date",
+    "items": [
+      {
+        "title": "Weddings",
+        "description": "Refined planning, romantic design direction, and flawless day-of coordination for celebrations that feel deeply personal and beautifully seamless.",
+        "image": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Elegant wedding reception table"
+      },
+      {
+        "title": "Luxury Picnics",
+        "description": "Styled outdoor gatherings with layered tablescapes, florals, and effortless hospitality for proposals, date nights, showers, and intimate celebrations.",
+        "image": "https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Luxury outdoor picnic setup"
+      },
+      {
+        "title": "Birthdays",
+        "description": "Milestone moments designed with polish, warmth, and statement-making detail so guests feel cared for and every photo feels frame-worthy.",
+        "image": "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Sophisticated birthday dinner setup"
+      },
+      {
+        "title": "Corporate Events",
+        "description": "Elevated launches, dinners, brand activations, and team celebrations executed with precision, hospitality, and premium visual impact.",
+        "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Modern corporate event"
+      }
+    ]
+  },
+  "portfolio": {
+    "eyebrow": "Portfolio",
+    "title": "Visual stories crafted to feel cinematic, intimate, and unforgettable.",
+    "ctaLabel": "Plan a Similar Experience",
+    "items": [
+      {
+        "label": "Romantic Wedding Design",
+        "title": "Classic details, soft candlelight, timeless atmosphere",
+        "image": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
+        "alt": "Elegant couple at wedding celebration",
+        "layout": "featured"
+      },
+      {
+        "label": "Bridal Styling",
+        "title": "Elegant, editorial, and effortlessly refined",
+        "image": "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Wedding bouquet and bridal styling",
+        "layout": "tall"
+      },
+      {
+        "label": "Luxury Picnic",
+        "title": "Soft textures, layered tablescapes, sunset charm",
+        "image": "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Luxury picnic with neutral decor",
+        "layout": "standard"
+      },
+      {
+        "label": "Private Dinner",
+        "title": "Intimate hosting with elevated detail",
+        "image": "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Beautifully styled event table with candles",
+        "layout": "standard"
+      },
+      {
+        "label": "Birthday Celebration",
+        "title": "Warm energy, premium styling, guest-first flow",
+        "image": "https://images.unsplash.com/photo-1464207687429-7505649dae38?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Birthday celebration with elegant decor",
+        "layout": "standard"
+      },
+      {
+        "label": "Golden Hour Setup",
+        "title": "Thoughtful design that photographs beautifully",
+        "image": "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1200&q=80",
+        "alt": "Outdoor event decor at golden hour",
+        "layout": "tall"
+      },
+      {
+        "label": "Brand & Corporate Events",
+        "title": "Polished experiences built to impress and connect",
+        "image": "https://images.unsplash.com/photo-1505236858219-8359eb29e329?auto=format&fit=crop&w=1400&q=80",
+        "alt": "Corporate gathering with stylish tablescape",
+        "layout": "wide"
+      }
+    ]
+  },
+  "about": {
+    "eyebrow": "About",
+    "title": "We believe the most memorable events are the ones where you feel fully present.",
+    "image": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80",
+    "alt": "Luxury event planner styling a tablescape",
+    "badgeEyebrow": "Design-first",
+    "badgeTitle": "detail obsessed",
+    "paragraphs": [
+      "Charlotte Event Planners was created for hosts who want a celebration that feels beautiful, intentional, and entirely taken care of. Our work blends creative direction, elevated styling, thoughtful logistics, and a calm presence behind the scenes.",
+      "From your first inspiration board to the final candle being lit, we shape every detail with care so your event looks stunning and feels effortless for you and your guests."
+    ],
+    "points": [
+      {
+        "title": "Passion",
+        "description": "Every event begins with your story and the feeling you want guests to leave with."
+      },
+      {
+        "title": "Creativity",
+        "description": "We layer textures, florals, lighting, and thoughtful details into a cohesive luxury experience."
+      },
+      {
+        "title": "Attention to detail",
+        "description": "Timelines, vendors, styling, and guest flow are handled with polished precision."
+      }
+    ],
+    "ctaLabel": "Book Your Consultation"
+  },
+  "benefits": {
+    "eyebrow": "Why choose us",
+    "title": "Luxury is not just how it looks. It's how effortless it feels.",
+    "items": [
+      {
+        "number": "01",
+        "title": "Stress-free experience",
+        "description": "We handle the moving parts, problem-solving, and behind-the-scenes flow so you can focus on celebrating."
+      },
+      {
+        "number": "02",
+        "title": "Personalized design",
+        "description": "Every proposal is tailored to your taste, your guests, and the atmosphere you want to create."
+      },
+      {
+        "number": "03",
+        "title": "Local Charlotte expertise",
+        "description": "We source trusted venues, creatives, rentals, and hospitality partners that elevate every experience."
+      },
+      {
+        "number": "04",
+        "title": "High-end execution",
+        "description": "From styling to scheduling, every detail is managed with polished precision and premium care."
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "Testimonials",
+    "title": "What it feels like to work with us.",
+    "ctaLabel": "Become Our Next Success Story",
+    "items": [
+      {
+        "quote": "I didn't have to chase a single detail. The design was stunning, the timeline was seamless, and I actually got to enjoy my own wedding.",
+        "name": "Danielle & Marcus",
+        "subtitle": "Charlotte Wedding"
+      },
+      {
+        "quote": "Our daughter's birthday felt like a magazine spread, but still warm and personal. Every guest kept asking who planned it.",
+        "name": "Kiana T.",
+        "subtitle": "Milestone Birthday Celebration"
+      },
+      {
+        "quote": "The luxury picnic was breathtaking. It felt romantic, elevated, and completely effortless from start to finish.",
+        "name": "Brianna R.",
+        "subtitle": "Luxury Picnic Experience"
+      },
+      {
+        "quote": "From vendor communication to the final styling details, everything was handled with calm confidence and true professionalism.",
+        "name": "Lauren P.",
+        "subtitle": "Private Event Client"
+      }
+    ]
+  },
+  "process": {
+    "eyebrow": "Process",
+    "title": "Your celebration, expertly guided from vision to flawless execution.",
+    "items": [
+      {
+        "number": "01",
+        "title": "Consultation",
+        "description": "We begin with your vision, priorities, guest experience, style preferences, and the details that matter most."
+      },
+      {
+        "number": "02",
+        "title": "Planning & Design",
+        "description": "We curate the concept, vendors, layout, styling, and timeline into a cohesive plan that feels refined and aligned."
+      },
+      {
+        "number": "03",
+        "title": "Execution",
+        "description": "On event day, we direct every moving part with grace so the atmosphere feels calm, polished, and unforgettable."
+      }
+    ]
+  },
+  "ctaBanner": {
+    "eyebrow": "Ready when you are",
+    "title": "Let's create something unforgettable.",
+    "text": "Whether you are planning a wedding, an intimate luxury picnic, or a milestone celebration, we'll make it feel effortless and elevated from beginning to end.",
+    "ctaLabel": "Book Your Consultation",
+    "backgroundImage": "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1800&q=80"
+  },
+  "contact": {
+    "eyebrow": "Contact",
+    "title": "Tell us what you're dreaming up.",
+    "text": "Share your event type, date, and vision, and we'll reach out with next steps to begin designing your experience.",
+    "phone": "+17045550191",
+    "phoneLabel": "+1 (704) 555-0191",
+    "email": "hello@charlotteeventplanners.com",
+    "emailLabel": "hello@charlotteeventplanners.com",
+    "location": "Charlotte, North Carolina",
+    "mapQuery": "Charlotte, NC",
+    "eventOptions": [
+      "Wedding",
+      "Birthday",
+      "Luxury Picnic",
+      "Corporate Event",
+      "Special Event"
+    ],
+    "form": {
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "eventTypeLabel": "Event Type",
+      "eventTypePlaceholder": "Select your event type",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Tell us about your vision, ideal date, guest count, and anything you want us to know.",
+      "submitLabel": "Send Inquiry",
+      "successMessage": "Thank you! Your inquiry has been sent."
+    }
+  },
+  "social": {
+    "instagram": "https://www.instagram.com/charlotteeventplanners",
+    "facebook": "https://www.facebook.com/p/Charlotte-Event-Planners-100083348290870/"
+  }
+}
