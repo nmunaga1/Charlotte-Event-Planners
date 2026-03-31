@@ -279,6 +279,32 @@ const setConsultationMessage = (element, message, isError = false) => {
   element.setAttribute("aria-live", isError ? "assertive" : "polite");
 };
 
+const getServiceBadge = (title, index) => {
+  const normalizedTitle = String(title || "").toLowerCase();
+
+  if (normalizedTitle.includes("wedding")) return "Signature Service";
+  if (normalizedTitle.includes("picnic")) return "Curated Styling";
+  if (normalizedTitle.includes("birthday")) return "Milestone Moments";
+  if (normalizedTitle.includes("corporate")) return "Polished Hosting";
+
+  return ["Bespoke Planning", "Refined Details", "Guest Experience", "Luxury Service"][
+    index % 4
+  ];
+};
+
+const getServiceLabel = (title, index) => {
+  const normalizedTitle = String(title || "").toLowerCase();
+
+  if (normalizedTitle.includes("wedding")) return "Full-service planning";
+  if (normalizedTitle.includes("picnic")) return "Romantic outdoor moments";
+  if (normalizedTitle.includes("birthday")) return "Guest-first celebrations";
+  if (normalizedTitle.includes("corporate")) return "Branded event experiences";
+
+  return ["Tailored concepts", "Elevated hosting", "Refined logistics", "Celebration design"][
+    index % 4
+  ];
+};
+
 const renderHeroHighlights = (items = []) => {
   const container = document.querySelector(".hero-highlights");
   if (!container) return;
@@ -334,14 +360,23 @@ const renderServices = (items = []) => {
           index * 70,
           320
         )}ms;">
-          <img
-            src="${escapeHtml(sanitizeImageUrl(item.image))}"
-            alt="${escapeHtml(String(item.alt || item.title || "Service image"))}"
-            loading="lazy"
-          />
+          <div class="service-card-media">
+            <img
+              src="${escapeHtml(sanitizeImageUrl(item.image))}"
+              alt="${escapeHtml(String(item.alt || item.title || "Service image"))}"
+              loading="lazy"
+            />
+            <span class="service-card-badge">${escapeHtml(
+              getServiceBadge(item.title, index)
+            )}</span>
+          </div>
           <div class="service-card-content">
+            <p class="service-card-label">${escapeHtml(
+              getServiceLabel(item.title, index)
+            )}</p>
             <h3>${escapeHtml(String(item.title || ""))}</h3>
             <p>${escapeHtml(String(item.description || ""))}</p>
+            <span class="service-card-link">Discover the experience</span>
           </div>
         </article>
       `
@@ -373,6 +408,7 @@ const renderPortfolio = (items = []) => {
           <figcaption>
             <span>${escapeHtml(String(item.label || ""))}</span>
             <strong>${escapeHtml(String(item.title || ""))}</strong>
+            <em>View inspiration</em>
           </figcaption>
         </figure>
       `;
@@ -401,7 +437,7 @@ const renderAboutPoints = (items = []) => {
   container.innerHTML = items
     .map(
       (item, index) => `
-        <div class="reveal" style="--reveal-delay:${Math.min(index * 70, 220)}ms;">
+        <div class="about-point reveal" style="--reveal-delay:${Math.min(index * 70, 220)}ms;">
           <strong>${escapeHtml(String(item.title || ""))}</strong>
           <span>${escapeHtml(String(item.description || ""))}</span>
         </div>
@@ -441,8 +477,9 @@ const renderTestimonials = (items = []) => {
           index * 60,
           260
         )}ms;">
+          <div class="testimonial-stars" aria-hidden="true">★★★★★</div>
           <p>"${escapeHtml(String(item.quote || ""))}"</p>
-          <div>
+          <div class="testimonial-meta">
             <strong>${escapeHtml(String(item.name || ""))}</strong>
             <span>${escapeHtml(String(item.subtitle || ""))}</span>
           </div>
@@ -648,7 +685,7 @@ const applySiteContent = (content) => {
 
   setTextContent(".contact-copy .eyebrow", contact.eyebrow);
   setTextContent(".contact-copy h2", contact.title);
-  setTextContent(".contact-copy > p:not(.eyebrow)", contact.text);
+  setTextContent(".contact-intro", contact.text);
   setTextContent(".contact-details a[href^='tel:']", contact.phoneLabel || contact.phone);
   setAttributeValue(
     ".contact-details a[href^='tel:']",
