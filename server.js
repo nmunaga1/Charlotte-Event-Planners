@@ -22,6 +22,7 @@ const SITE_CONTENT_PATH = path.join(DATA_DIR, "site-content.json");
 const SITE_CONTENT_BLOB_PREFIX = "cms/site-content-";
 const ADMIN_AUTH_PATH = path.join(DATA_DIR, "admin-auth.json");
 const SESSION_COOKIE_NAME = "cep_admin_session";
+const BLOB_READ_WRITE_TOKEN = String(process.env.BLOB_READ_WRITE_TOKEN || "").trim();
 const SESSION_TTL_MS = Math.max(
   60 * 60 * 1000,
   (Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12) * 60 * 60 * 1000
@@ -90,6 +91,14 @@ const escapeXml = (value = "") =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
 
+const getErrorMessage = (error, fallbackMessage) => {
+  if (error instanceof Error && error.message.trim()) {
+    return error.message.trim();
+  }
+
+  return fallbackMessage;
+};
+
 const submittedAtFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "full",
   timeStyle: "short",
@@ -121,7 +130,7 @@ class CmsStorageError extends Error {
 const isVercelRuntime = () => Boolean(process.env.VERCEL);
 
 const isBlobStorageConfigured = () =>
-  Boolean(String(process.env.BLOB_READ_WRITE_TOKEN || "").trim());
+  Boolean(BLOB_READ_WRITE_TOKEN);
 
 const readLocalSiteContent = async () => {
   const rawContent = await fs.readFile(SITE_CONTENT_PATH, "utf8");
@@ -152,6 +161,7 @@ const getLatestSiteContentBlob = async ({ refresh = false } = {}) => {
   const { blobs } = await list({
     prefix: SITE_CONTENT_BLOB_PREFIX,
     limit: 1000,
+    token: BLOB_READ_WRITE_TOKEN,
   });
 
   const nextLatestBlob =
@@ -229,6 +239,7 @@ const writeSiteContent = async (nextContent) => {
       access: "public",
       addRandomSuffix: false,
       contentType: "application/json; charset=utf-8",
+      token: BLOB_READ_WRITE_TOKEN,
     });
 
     latestSiteContentBlob = {
@@ -1001,10 +1012,13 @@ app.put("/api/admin/content", ensureSameOrigin, ensureAdminSession, async (req, 
   } catch (error) {
     console.error("Failed to save CMS content:", error);
 
-    if (error instanceof CmsStorageError) {
+    if (error instanceof CmsStorageError || isBlobStorageConfigured()) {
       return res.status(503).json({
         ok: false,
-        error: error.message,
+        error: getErrorMessage(
+          error,
+          "CMS storage is unavailable right now. Please try again shortly."
+        ),
       });
     }
 
