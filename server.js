@@ -50,7 +50,16 @@ const loginAttempts = new Map();
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(PUBLIC_DIR, { index: false, dotfiles: "ignore", redirect: false }));
-app.use("/admin", express.static(ADMIN_DIR, { index: false, redirect: false }));
+app.use(
+  "/admin",
+  express.static(ADMIN_DIR, {
+    index: false,
+    redirect: false,
+    setHeaders: (res) => {
+      res.setHeader("Cache-Control", "no-store");
+    },
+  })
+);
 
 const getEnvBoolean = (value, defaultValue = false) => {
   if (value === undefined) return defaultValue;
@@ -989,6 +998,7 @@ app.get("/sitemap.xml", async (_req, res) => {
 });
 
 app.get(/^\/admin\/?$/, (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
   res.sendFile(path.join(ADMIN_DIR, "index.html"));
 });
 
