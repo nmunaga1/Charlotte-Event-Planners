@@ -311,7 +311,7 @@ textarea {
 
 .site-header {
   position: sticky;
-  top: 0;
+  top: 0.85rem;
   z-index: 1000;
   padding: 0 0 0.8rem;
 }
@@ -1621,7 +1621,7 @@ body.page-ready .hero-card {
   }
 
   .site-header {
-    padding-top: 0;
+    top: 0.6rem;
   }
 
   .navbar {
