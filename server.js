@@ -6,6 +6,7 @@ const express = require("express");
 const { get, list, put } = require("@vercel/blob");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const { authenticator } = require("otplib");
 
 require("dotenv").config();
@@ -26,6 +27,7 @@ const BLOB_READ_WRITE_TOKEN = String(process.env.BLOB_READ_WRITE_TOKEN || "").tr
 const BLOB_STORE_ACCESS = String(process.env.BLOB_STORE_ACCESS || "private").trim().toLowerCase() === "public"
   ? "public"
   : "private";
+const RESEND_API_KEY = String(process.env.RESEND_API_KEY || "").trim();
 const SESSION_TTL_MS = Math.max(
   60 * 60 * 1000,
   (Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12) * 60 * 60 * 1000
@@ -347,6 +349,98 @@ const createTransporter = () => {
       pass: SMTP_PASS,
     },
   });
+};
+
+const createResendClient = () => {
+  if (!RESEND_API_KEY) {
+    return null;
+  }
+
+  return new Resend(RESEND_API_KEY);
+};
+
+const sendContactEmail = async ({
+  name,
+  email,
+  eventType,
+  message,
+  submittedAt,
+}) => {
+  const destinationEmail = process.env.CONTACT_EMAIL_TO || DEFAULT_CONTACT_EMAIL_TO;
+  const senderName =
+    process.env.CONTACT_EMAIL_FROM_NAME || "Charlotte Event Planners";
+  const resendClient = createResendClient();
+  const resendFrom = String(process.env.CONTACT_EMAIL_FROM || "").trim();
+
+  if (resendClient) {
+    if (!resendFrom) {
+      throw new Error(
+        "Resend is configured, but CONTACT_EMAIL_FROM is missing. Add a verified sender address and redeploy."
+      );
+    }
+
+    await resendClient.emails.send({
+      from: resendFrom,
+      to: [destinationEmail],
+      replyTo: email,
+      subject: `New inquiry from ${name} (${eventType})`,
+      text: createPlainTextEmail({
+        name,
+        email,
+        eventType,
+        message,
+        submittedAt,
+      }),
+      html: createEmailMarkup({
+        name,
+        email,
+        eventType,
+        message,
+        submittedAt,
+        replyTo: email,
+      }),
+    });
+
+    return {
+      provider: "resend",
+    };
+  }
+
+  const transporter = createTransporter();
+
+  if (!transporter) {
+    throw new Error(
+      "Email delivery is not configured yet. Add either Resend or SMTP settings and redeploy."
+    );
+  }
+
+  const senderAddress = process.env.SMTP_USER;
+
+  await transporter.sendMail({
+    to: destinationEmail,
+    from: `"${senderName}" <${senderAddress}>`,
+    replyTo: email,
+    subject: `New inquiry from ${name} (${eventType})`,
+    text: createPlainTextEmail({
+      name,
+      email,
+      eventType,
+      message,
+      submittedAt,
+    }),
+    html: createEmailMarkup({
+      name,
+      email,
+      eventType,
+      message,
+      submittedAt,
+      replyTo: email,
+    }),
+  });
+
+  return {
+    provider: "smtp",
+  };
 };
 
 const readAdminAuthFile = () => {
@@ -1053,51 +1147,32 @@ app.post("/api/contact", async (req, res) => {
     });
   }
 
-  const transporter = createTransporter();
-
-  if (!transporter) {
-    return res.status(500).json({
-      ok: false,
-      error:
-        "Email delivery is not configured yet. Add the SMTP settings in the .env file and restart the server.",
-    });
-  }
-
   const submittedAt = submittedAtFormatter.format(new Date());
-  const destinationEmail = process.env.CONTACT_EMAIL_TO || DEFAULT_CONTACT_EMAIL_TO;
-  const senderAddress = process.env.SMTP_USER;
-  const senderName =
-    process.env.CONTACT_EMAIL_FROM_NAME || "Charlotte Event Planners";
 
   try {
-    await transporter.sendMail({
-      to: destinationEmail,
-      from: `"${senderName}" <${senderAddress}>`,
-      replyTo: email,
-      subject: `New inquiry from ${name} (${eventType})`,
-      text: createPlainTextEmail({
-        name,
-        email,
-        eventType,
-        message,
-        submittedAt,
-      }),
-      html: createEmailMarkup({
-        name,
-        email,
-        eventType,
-        message,
-        submittedAt,
-        replyTo: email,
-      }),
+    await sendContactEmail({
+      name,
+      email,
+      eventType,
+      message,
+      submittedAt,
     });
 
     return res.status(200).json({ ok: true });
   } catch (error) {
     console.error("Contact form email failed:", error);
+
+    const errorMessage = getErrorMessage(
+      error,
+      "We couldn't send your inquiry right now. Please try again shortly."
+    );
+
     return res.status(500).json({
       ok: false,
-      error: "We couldn't send your inquiry right now. Please try again shortly.",
+      error:
+        RESEND_API_KEY || process.env.SMTP_HOST
+          ? errorMessage
+          : "Email delivery is not configured yet. Add either Resend or SMTP settings and redeploy.",
     });
   }
 });
