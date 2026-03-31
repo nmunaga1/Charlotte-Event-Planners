@@ -3,7 +3,7 @@ const fsSync = require("fs");
 const fs = require("fs/promises");
 const crypto = require("crypto");
 const express = require("express");
-const { list, put } = require("@vercel/blob");
+const { get, list, put } = require("@vercel/blob");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const { authenticator } = require("otplib");
@@ -23,6 +23,9 @@ const SITE_CONTENT_BLOB_PREFIX = "cms/site-content-";
 const ADMIN_AUTH_PATH = path.join(DATA_DIR, "admin-auth.json");
 const SESSION_COOKIE_NAME = "cep_admin_session";
 const BLOB_READ_WRITE_TOKEN = String(process.env.BLOB_READ_WRITE_TOKEN || "").trim();
+const BLOB_STORE_ACCESS = String(process.env.BLOB_STORE_ACCESS || "private").trim().toLowerCase() === "public"
+  ? "public"
+  : "private";
 const SESSION_TTL_MS = Math.max(
   60 * 60 * 1000,
   (Number(process.env.ADMIN_SESSION_TTL_HOURS) || 12) * 60 * 60 * 1000
@@ -173,14 +176,17 @@ const getLatestSiteContentBlob = async ({ refresh = false } = {}) => {
   return nextLatestBlob;
 };
 
-const readBlobText = async (url) => {
-  const response = await fetch(url, { cache: "no-store" });
+const readBlobText = async (pathname) => {
+  const result = await get(pathname, {
+    access: BLOB_STORE_ACCESS,
+    token: BLOB_READ_WRITE_TOKEN,
+  });
 
-  if (!response.ok) {
+  if (result?.statusCode !== 200 || !result.stream) {
     throw new CmsStorageError("The CMS storage could not be read from Vercel Blob.");
   }
 
-  return response.text();
+  return new Response(result.stream).text();
 };
 
 const readBlobSiteContent = async () => {
@@ -190,7 +196,7 @@ const readBlobSiteContent = async () => {
     return null;
   }
 
-  const rawContent = await readBlobText(latestBlob.url);
+  const rawContent = await readBlobText(latestBlob.pathname);
 
   return {
     content: JSON.parse(rawContent),
@@ -236,7 +242,7 @@ const writeSiteContent = async (nextContent) => {
     const rawContent = `${JSON.stringify(nextContent, null, 2)}\n`;
 
     const blob = await put(pathname, rawContent, {
-      access: "public",
+      access: BLOB_STORE_ACCESS,
       addRandomSuffix: false,
       contentType: "application/json; charset=utf-8",
       token: BLOB_READ_WRITE_TOKEN,
