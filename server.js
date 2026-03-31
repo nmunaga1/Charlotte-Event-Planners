@@ -3,6 +3,7 @@ const fsSync = require("fs");
 const fs = require("fs/promises");
 const crypto = require("crypto");
 const express = require("express");
+const { list, put } = require("@vercel/blob");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const { authenticator } = require("otplib");
@@ -18,6 +19,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 const ADMIN_DIR = path.join(PUBLIC_DIR, "admin");
 const DATA_DIR = path.join(__dirname, "data");
 const SITE_CONTENT_PATH = path.join(DATA_DIR, "site-content.json");
+const SITE_CONTENT_BLOB_PREFIX = "cms/site-content-";
 const ADMIN_AUTH_PATH = path.join(DATA_DIR, "admin-auth.json");
 const SESSION_COOKIE_NAME = "cep_admin_session";
 const SESSION_TTL_MS = Math.max(
@@ -46,6 +48,7 @@ const REQUIRED_CONTENT_KEYS = [
 
 const adminSessions = new Map();
 const loginAttempts = new Map();
+let latestSiteContentBlob = null;
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false }));
@@ -108,12 +111,24 @@ const normalizeSiteUrl = (value = "") => {
   return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
 };
 
-const readSiteContent = async () => {
+class CmsStorageError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "CmsStorageError";
+  }
+}
+
+const isVercelRuntime = () => Boolean(process.env.VERCEL);
+
+const isBlobStorageConfigured = () =>
+  Boolean(String(process.env.BLOB_READ_WRITE_TOKEN || "").trim());
+
+const readLocalSiteContent = async () => {
   const rawContent = await fs.readFile(SITE_CONTENT_PATH, "utf8");
   return JSON.parse(rawContent);
 };
 
-const writeSiteContent = async (nextContent) => {
+const writeLocalSiteContent = async (nextContent) => {
   await fs.mkdir(DATA_DIR, { recursive: true });
   await fs.writeFile(
     SITE_CONTENT_PATH,
@@ -122,18 +137,121 @@ const writeSiteContent = async (nextContent) => {
   );
 };
 
+const createSiteContentBlobPath = () =>
+  `${SITE_CONTENT_BLOB_PREFIX}${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+
+const getLatestSiteContentBlob = async ({ refresh = false } = {}) => {
+  if (!isBlobStorageConfigured()) {
+    return null;
+  }
+
+  if (latestSiteContentBlob && !refresh) {
+    return latestSiteContentBlob;
+  }
+
+  const { blobs } = await list({
+    prefix: SITE_CONTENT_BLOB_PREFIX,
+    limit: 1000,
+  });
+
+  const nextLatestBlob =
+    [...blobs].sort((leftBlob, rightBlob) =>
+      leftBlob.pathname.localeCompare(rightBlob.pathname)
+    ).at(-1) || null;
+
+  latestSiteContentBlob = nextLatestBlob;
+  return nextLatestBlob;
+};
+
+const readBlobText = async (url) => {
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new CmsStorageError("The CMS storage could not be read from Vercel Blob.");
+  }
+
+  return response.text();
+};
+
+const readBlobSiteContent = async () => {
+  const latestBlob = await getLatestSiteContentBlob();
+
+  if (!latestBlob) {
+    return null;
+  }
+
+  const rawContent = await readBlobText(latestBlob.url);
+
+  return {
+    content: JSON.parse(rawContent),
+    savedAt: new Date(latestBlob.uploadedAt).toISOString(),
+  };
+};
+
+const readSiteContent = async () => {
+  const blobResult = await readBlobSiteContent();
+
+  if (blobResult?.content) {
+    return blobResult.content;
+  }
+
+  return readLocalSiteContent();
+};
+
 const validateSiteContent = (content) =>
   isPlainObject(content) &&
   REQUIRED_CONTENT_KEYS.every((key) => Object.hasOwn(content, key));
 
 const getContentWithTimestamp = async () => {
+  const blobResult = await readBlobSiteContent();
+
+  if (blobResult) {
+    return blobResult;
+  }
+
   const [content, stats] = await Promise.all([
-    readSiteContent(),
+    readLocalSiteContent(),
     fs.stat(SITE_CONTENT_PATH),
   ]);
 
   return {
     content,
+    savedAt: stats.mtime.toISOString(),
+  };
+};
+
+const writeSiteContent = async (nextContent) => {
+  if (isBlobStorageConfigured()) {
+    const pathname = createSiteContentBlobPath();
+    const rawContent = `${JSON.stringify(nextContent, null, 2)}\n`;
+
+    const blob = await put(pathname, rawContent, {
+      access: "public",
+      addRandomSuffix: false,
+      contentType: "application/json; charset=utf-8",
+    });
+
+    latestSiteContentBlob = {
+      pathname,
+      url: blob.url,
+      uploadedAt: new Date(),
+    };
+
+    return {
+      savedAt: latestSiteContentBlob.uploadedAt.toISOString(),
+    };
+  }
+
+  if (isVercelRuntime()) {
+    throw new CmsStorageError(
+      "CMS saving is not configured for production yet. Create a Vercel Blob store for this project so content edits can persist."
+    );
+  }
+
+  await writeLocalSiteContent(nextContent);
+  const stats = await fs.stat(SITE_CONTENT_PATH);
+
+  return {
     savedAt: stats.mtime.toISOString(),
   };
 };
@@ -873,8 +991,7 @@ app.put("/api/admin/content", ensureSameOrigin, ensureAdminSession, async (req, 
   }
 
   try {
-    await writeSiteContent(nextContent);
-    const { savedAt } = await getContentWithTimestamp();
+    const { savedAt } = await writeSiteContent(nextContent);
 
     return res.status(200).json({
       ok: true,
@@ -883,6 +1000,14 @@ app.put("/api/admin/content", ensureSameOrigin, ensureAdminSession, async (req, 
     });
   } catch (error) {
     console.error("Failed to save CMS content:", error);
+
+    if (error instanceof CmsStorageError) {
+      return res.status(503).json({
+        ok: false,
+        error: error.message,
+      });
+    }
+
     return res.status(500).json({
       ok: false,
       error: "The updated content could not be saved.",
